@@ -182,7 +182,81 @@ function formatar_saida(lista){
 }
 
 
+//Criar um método que imprima no console um array com 
+//a cidade de maior nome de cada estado, seguida de seu UF. 
+//Em caso de empate, considerar a ordem alfabética para ordená-los e 
+//então retornar o primeiro. Por exemplo: 
+//[“Nome da Cidade – UF”, “Nome da Cidade – UF”, ...].
+
+function maior_cidade(){
+    const cidades = './Cidades.json'
+    const estados = './Estados.json'
+
+    var CidadesData = fs.readFileSync(cidades, "utf8");
+    var EstadosData = fs.readFileSync(estados, "utf8");
+    var lista=[]
+
+    var Estados = JSON.parse(EstadosData)
+    var Cidades = JSON.parse(CidadesData)
+    var estadoCidade = new Object();
+    Estados.forEach(estado => {
+        Cidades.forEach(cidade =>{
+            if (estado.ID == cidade.Estado){
+                estadoCidade["Sigla"] = `${estado.Sigla}`;
+                estadoCidade["nome_cidade"] = `${cidade.Nome}`;
+                lista.push(estadoCidade)
+                estadoCidade = {}
+            }
+        });
+
+    });
+
+    //var dados_cidades = JSON.parse(lista)
+    //console.log(">",dados_cidades)
+    
+    
+    //let lista_ordenadaDecr = ordenarDecr(lista1)
+    
+    
+    //let lista_ordenadaCre = ordenarCre(lista2)
+
+    ordena_nomes(lista)
+}
+
+function ordena_nomes(lista){
+    console.log(lista)
 
 
+    lista.sort(function (a, b) {
+        if (a.nome_cidade.length > b.nome_cidade.length) {
+          return 1;
+        }
+        if (a.nome_cidade.length < b.nome_cidade.length) {
+          return -1;
+        }
+        if (a.nome_cidade.length == b.nome_cidade.length) {
+            
+            if (a.nome_cidade > b.nome_cidade) {
+                return 1;
+            }
+            if (a.nome_cidade < b.nome_cidade) {
+                return -1;
+            }
+        }
+         
+        return 0;
+    });
+
+    console.log(formatar_saida_cidades(lista))
+}
+
+function formatar_saida_cidades(lista){
+    var nova_lista = []
+    lista.map((l)=>{
+        nova_lista.push(`${l.Sigla}-${l.nome_cidade}`)
+    })
+    return nova_lista
+}
 //contar_cidades()
-cinco_estados_mais_cidades()
+//cinco_estados_mais_cidades()
+maior_cidade()
