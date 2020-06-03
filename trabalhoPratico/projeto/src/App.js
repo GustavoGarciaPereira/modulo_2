@@ -113,20 +113,35 @@ function cinco_estados_mais_cidades(){
     var CidadesData = fs.readFileSync(cidades, "utf8");
     var EstadosData = fs.readFileSync(estados, "utf8");
     var lista=[]
+
     var Estados = JSON.parse(EstadosData)
+    var oestado = new Object();
     Estados.forEach(estado => {
-        lista.push(
-            `{"Sigla":"${estado.Sigla}","numero_de_cidades":${contar_cidades_sigra(estado.Sigla)}}`
-            )
+
+        oestado["Sigla"] = `${estado.Sigla}`;
+        oestado["numero_de_cidades"] = contar_cidades_sigra(estado.Sigla);
+        lista.push(oestado)
+        oestado = {}
     });
 
-    var dados_cidades = JSON.parse(lista)
-    console.log(">",dados_cidades)
-    let lista_ordenada = ordenar(lista)
-    console.log(lista_ordenada)
+    //var dados_cidades = JSON.parse(lista)
+    //console.log(">",dados_cidades)
+    
+    
+    //let lista_ordenadaDecr = ordenarDecr(lista1)
+    
+    
+    //let lista_ordenadaCre = ordenarCre(lista2)
+
+    ordenarDecr(lista)
+    ordenarCre(lista)
+
+
 }
 
-function ordenar(lista){
+//cre
+function ordenarCre(lista){
+    //crescente
     lista.sort(function (a, b) {
         if (a.numero_de_cidades > b.numero_de_cidades) {
           return 1;
@@ -137,8 +152,37 @@ function ordenar(lista){
         // a must be equal to b
         return 0;
       });
-      return lista
+
+    console.log(formatar_saida(lista.slice(0,5)).reverse()) 
 }
+
+//decre
+function ordenarDecr(lista){
+
+    //decrescente
+    lista.sort(function (a, b) {
+        if (a.numero_de_cidades < b.numero_de_cidades) {
+          return 1;
+        }
+        if (a.numero_de_cidades > b.numero_de_cidades) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
+      console.log(formatar_saida(lista.slice(0,5))) 
+}
+
+function formatar_saida(lista){
+    var nova_lista = []
+    lista.map((l)=>{
+        nova_lista.push(`${l.Sigla}-${l.numero_de_cidades}`)
+    })
+    return nova_lista
+}
+
+
+
 
 //contar_cidades()
 cinco_estados_mais_cidades()
