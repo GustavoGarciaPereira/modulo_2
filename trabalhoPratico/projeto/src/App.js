@@ -188,7 +188,7 @@ function formatar_saida(lista){
 //então retornar o primeiro. Por exemplo: 
 //[“Nome da Cidade – UF”, “Nome da Cidade – UF”, ...].
 
-function maior_cidade(){
+function menor_cidade(){
     const cidades = './Cidades.json'
     const estados = './Estados.json'
 
@@ -220,13 +220,12 @@ function maior_cidade(){
     
     //let lista_ordenadaCre = ordenarCre(lista2)
 
-    ordena_nomes(lista)
+    return ordena_nomesMenor(lista)
+
+
 }
 
-function ordena_nomes(lista){
-    console.log(lista)
-
-
+function ordena_nomesMenor(lista){
     lista.sort(function (a, b) {
         if (a.nome_cidade.length > b.nome_cidade.length) {
           return 1;
@@ -243,11 +242,37 @@ function ordena_nomes(lista){
                 return -1;
             }
         }
-         
         return 0;
     });
 
     console.log(formatar_saida_cidades(lista))
+    return formatar_saida_cidades(lista)
+
+    
+}
+
+function ordena_nomesMaior(lista){
+    lista.sort(function (a, b) {
+        if (a.nome_cidade.length < b.nome_cidade.length) {
+          return 1;
+        }
+        if (a.nome_cidade.length > b.nome_cidade.length) {
+          return -1;
+        }
+        if (a.nome_cidade.length == b.nome_cidade.length) {
+            
+            if (a.nome_cidade > b.nome_cidade) {
+                return 1;
+            }
+            if (a.nome_cidade < b.nome_cidade) {
+                return -1;
+            }
+        }
+        return 0;
+    });
+
+    console.log(formatar_saida_cidades(lista))
+    return formatar_saida_cidades(lista)
 }
 
 function formatar_saida_cidades(lista){
@@ -257,6 +282,83 @@ function formatar_saida_cidades(lista){
     })
     return nova_lista
 }
+
+/*
+Criar um método que imprima no console um array com a cidade de menor 
+nome de cada estado,
+ seguida de seu UF. Em caso de empate, considerar a ordem 
+ alfabética para ordená-los e 
+ então retorne o primeiro. 
+Por exemplo: [“Nome da Cidade – UF”, “Nome da Cidade – UF”, ...].
+*/
+
+function maior_nome(){
+    const cidades = './Cidades.json'
+    const estados = './Estados.json'
+
+    var CidadesData = fs.readFileSync(cidades, "utf8");
+    var EstadosData = fs.readFileSync(estados, "utf8");
+    var lista=[]
+
+    var Estados = JSON.parse(EstadosData)
+    var Cidades = JSON.parse(CidadesData)
+    var estadoCidade = new Object();
+    Estados.forEach(estado => {
+        Cidades.forEach(cidade =>{
+            if (estado.ID == cidade.Estado){
+                estadoCidade["Sigla"] = `${estado.Sigla}`;
+                estadoCidade["nome_cidade"] = `${cidade.Nome}`;
+                lista.push(estadoCidade)
+                estadoCidade = {}
+            }
+        });
+
+    });
+
+
+
+    return ordena_nomesMaior(lista)
+}
+
+
+/* 
+Criar um método que imprima no console a cidade de maior nome entre 
+todos os estados, 
+seguido do seu UF. Em caso de empate, considerar a ordem alfabética 
+para ordená-los e 
+então retornar o primeiro. 
+Exemplo: “Nome da Cidade - UF".
+*/
+
+function maior_cidade_todos_estados(){
+    var lista = maior_nome()
+    console.log("<>>>",lista[0])
+}
+
+
+
+/* 
+Criar um método que imprima no console a cidade de menor nome entre 
+todos os estados, 
+seguido do seu UF. Em caso de empate, considerar a ordem alfabética 
+para ordená-los e 
+então retornar o primeiro. 
+Exemplo: “Nome da Cidade - UF".
+*/
+function menor_cidade_todos_estados(){
+    var lista = menor_cidade()
+    console.log("<>>>",lista[0])
+}
+
+
+
+
 //contar_cidades()
-//cinco_estados_mais_cidades()
-maior_cidade()
+cinco_estados_mais_cidades()
+//menor_cidade()
+
+//maior_nome()
+
+
+//maior_cidade_todos_estados()
+//menor_cidade_todos_estados()
