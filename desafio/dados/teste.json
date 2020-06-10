@@ -1,0 +1,19 @@
+{
+  "nextId": 3,
+  "grades": [
+    {
+      "id": 1,
+      "student": "gustavo",
+      "type": "Prova Final",
+      "value": 10,
+      "timestamp": "2020-06-10T00:08:12.285Z"
+    },
+    {
+      "id": 2,
+      "student": "gustavo",
+      "type": "Prova Final",
+      "value": 10,
+      "timestamp": "2020-06-10T00:08:27.586Z"
+    }
+  ]
+}
