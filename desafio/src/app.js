@@ -60,6 +60,89 @@ app.get('/nota/:student/:subject',(req,res)=>{
 
 })
 
+
+/*Crie um endpoint para consultar a média das grades de determinado subject e type. 
+O endpoint deverá receber como parâmetro um subject e um type, e retornar a média. 
+A média é calculada somando o registro value de todos os 
+registros que possuem o subject e type informados, dividindo pelo total
+ de registros que possuem este mesmo subject e type.
+*/
+app.get('/media/:subject/:type',(req,res)=>{
+    media(req.params.subject, req.params.type)
+    res.send(`${req.params.subject} ${req.params.type}\n
+    ${media(req.params.subject, req.params.type)}`)
+});
+
+/*Crie um endpoint para retornar as três melhores grades de acordo com 
+determinado subject e type. O endpoint deve receber como parâmetro um 
+subject e um type, e retornar um array com os três registros de maior 
+value daquele subject e type. A ordem deve ser do maior para o menor.
+*/
+app.get('/tres_maiores/:subject/:type',(req,res)=>{
+    //media(req.params.subject, req.params.type)
+    //res.send(`${req.params.subject} ${req.params.type}\n
+    //${media(req.params.subject, req.params.type)}`)
+    tres_maiores(req.params.subject, req.params.type)
+    res.send(`${req.params.subject} ${req.params.type}\n
+    ${JSON.stringify(tres_maiores(req.params.subject, req.params.type), null, 2)}`)
+});
+
+
+function tres_maiores(subject, type){
+    console.log(`${subject}, ${type}`)
+    const grades = './dados/grades copy.json'
+    const Dadosgrades = fs.readFileSync(grades, "utf8");
+    const dados_grades = JSON.parse(Dadosgrades)
+
+    const nota = dados_grades['grades'].filter(x=>{
+        if (x.type.toUpperCase() == String(type).toUpperCase() && x.subject.toUpperCase() == String(subject).toUpperCase()){
+            return x.value
+        }
+    })
+    return ordena_valoresMaior(nota).splice(0,3)
+
+    //var i = 0;
+    //nota.forEach(element => {
+    //    i+=element.value
+    //});
+    //return i/(nota.length>0?nota.length:1)
+}
+
+function ordena_valoresMaior(lista){
+    lista.sort(function (a, b) {
+        if (a.value < b.value) {
+          return 1;
+        }
+        if (a.value > b.value) {
+          return -1;
+        }
+        return 0;
+    });
+
+
+    return lista
+}
+
+
+
+function media(subject, type){
+    console.log(`${subject}, ${type}`)
+    const grades = './dados/grades copy.json'
+    const Dadosgrades = fs.readFileSync(grades, "utf8");
+    const dados_grades = JSON.parse(Dadosgrades)
+
+    const nota = dados_grades['grades'].filter(x=>{
+        if (x.type.toUpperCase() == String(type).toUpperCase() && x.subject.toUpperCase() == String(subject).toUpperCase()){
+            return x.value
+        }
+    })
+    var i = 0;
+    nota.forEach(element => {
+        i+=element.value
+    });
+    return i/(nota.length>0?nota.length:1)
+}
+
 function atualisar(id, {student, subject ,type, value}, res){
     console.log("id",id)
     console.log(`${student}, ${subject} ,${type}, ${value}`)
@@ -163,37 +246,21 @@ function consultar(id){
     return trans
 }
 
-function consultar_nota(nome,materia){
+function consultar_nota(nome, materia){
     const grades = './dados/grades copy.json'
     const Dadosgrades = fs.readFileSync(grades, "utf8");
     const dados_grades = JSON.parse(Dadosgrades)
-    console.log("OK",nome,"f",materia)
-
 
     const nota = dados_grades['grades'].filter(x=>{
-
         if (x.student.toUpperCase() == String(nome).toUpperCase() && x.subject.toUpperCase() == String(materia).toUpperCase()){
             return x.value
         }
     })
-    //console.log(">>>>>>>>>>>>>>>>>>>>>",nota)
-
-    //const soma = nota.reduce((accumulator, currentValue) =>{
-    //    //console.log("<>",accumulator.student.toUpperCase(),"\n<>",accumulator.subject.toUpperCase())
-    //    
-    //    return accumulator.value + currentValue.value
-    ////    
-    ////    
-    ////    //if (accumulator.student.toUpperCase() == String(nome).toUpperCase() && accumulator.subject.toUpperCase() == String(materia).toUpperCase()){
-    ////    //    accumulator.vale+currentValue.value
-    ////    //}
-    //});
     var i = 0;
     nota.forEach(element => {
         i+=element.value
     });
     return i
-    // expected output: 10
 }
 
 app.listen(port,()=>{
