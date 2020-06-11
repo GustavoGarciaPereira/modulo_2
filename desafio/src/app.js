@@ -47,6 +47,19 @@ app.delete('/deletar/:id',(req,res)=>{
     deletar(req.params.id)
 })
 
+/*
+Crie um endpoint para consultar a nota total de um aluno em uma disciplina. 
+O endpoint deverá receber como parâmetro o student e o subject, e realizar
+ a soma de todas as notas de atividades correspondentes àquele subject, 
+ para aquele student. O endpoint deverá retornar a soma da propriedade value 
+ dos registros encontrados.
+*/
+app.get('/nota/:student/:subject',(req,res)=>{
+    
+    res.send(`${req.params.student}\n${req.params.subject}\n${consultar_nota(req.params.student,req.params.subject)}`)
+
+})
+
 function atualisar(id, {student, subject ,type, value}, res){
     console.log("id",id)
     console.log(`${student}, ${subject} ,${type}, ${value}`)
@@ -148,6 +161,39 @@ function consultar(id){
         return e.id == id
     })
     return trans
+}
+
+function consultar_nota(nome,materia){
+    const grades = './dados/grades copy.json'
+    const Dadosgrades = fs.readFileSync(grades, "utf8");
+    const dados_grades = JSON.parse(Dadosgrades)
+    console.log("OK",nome,"f",materia)
+
+
+    const nota = dados_grades['grades'].filter(x=>{
+
+        if (x.student.toUpperCase() == String(nome).toUpperCase() && x.subject.toUpperCase() == String(materia).toUpperCase()){
+            return x.value
+        }
+    })
+    //console.log(">>>>>>>>>>>>>>>>>>>>>",nota)
+
+    //const soma = nota.reduce((accumulator, currentValue) =>{
+    //    //console.log("<>",accumulator.student.toUpperCase(),"\n<>",accumulator.subject.toUpperCase())
+    //    
+    //    return accumulator.value + currentValue.value
+    ////    
+    ////    
+    ////    //if (accumulator.student.toUpperCase() == String(nome).toUpperCase() && accumulator.subject.toUpperCase() == String(materia).toUpperCase()){
+    ////    //    accumulator.vale+currentValue.value
+    ////    //}
+    //});
+    var i = 0;
+    nota.forEach(element => {
+        i+=element.value
+    });
+    return i
+    // expected output: 10
 }
 
 app.listen(port,()=>{
