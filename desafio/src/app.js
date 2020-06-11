@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 //import express from 'express';
 const app = express();
-const port = 2000;
+const port = 3000;
 
 
 app.use(express.json())
@@ -23,24 +23,28 @@ app.get('/arquivos',(req,res)=>{
 })
 
 app.post('/cadastrar',(req,res)=>{
-
-    //const grades = './dados/grades.json'
-    //const Dadosgrades = fs.readFileSync(grades, "utf8");
-    //const dados_grades = JSON.parse(Dadosgrades)
-    //console.log("<>",dados_grades)
-    console.log(req.body)
-    console.log(new Date())
     salvar_grade(req.body)
-    //"timestamp":
     res.send("cadastrato")  
 })
 
 app.put('/atualisar/:id',(req,res)=>{
-
-    
-
     atualisar(req.params.id,req.body,res)
+})
 
+/*
+Crie um endpoint para consultar uma grade em específico. 
+Esse endpoint deverá receber como parâmetro o id 
+da grade e retornar suas informações.
+*/
+app.get('/consultar/:id',(req,res)=>{
+    res.send(consultar(req.params.id))
+})
+
+
+
+app.delete('/deletar/:id',(req,res)=>{
+    //res.send(`deletando ${req.params.id}`)
+    deletar(req.params.id)
 })
 
 function atualisar(id, {student, subject ,type, value}, res){
@@ -50,111 +54,28 @@ function atualisar(id, {student, subject ,type, value}, res){
     const Dadosgrades = fs.readFileSync(grades, "utf8");
     const dados_grades = JSON.parse(Dadosgrades)
 
-    dados_grades['grades'].forEach(element => {
-        if(element.id == id){
-            dados_grades['grades'].indexOf(JSON.stringify({"nome":"gustavo"}),id)
+    const trans = dados_grades['grades'].map(e=>{
+        if(e['id']==id){
+            e["student"] = student ? student:e["student"]
+            e["subject"] = subject ? subject:e["subject"]
+            e["type"] = type ? type:e["type"]
+            e["value"] = value ? value:e["value"]
+            e["timestamp"]= new Date()
         }
-    });
+        return e
+    })
+    while(dados_grades['grades'].length) {
+        dados_grades['grades'].pop();
+    }
+    const qw = {"nextId":49,
+        "grades":trans
+    }
 
+    console.log(trans)
 
-//    var pos = dados_grades['grades'].map(e => {
-//        e.id == id
-//        //if(e.id == id){
-//        //    
-//        //    e["student"]=student 
-//        //    e["subject"]=subject
-//        //    e["type"]=type
-//        //    e["value"]=value
-//        //    e["timestamp"]= new Date()
-//        //    return e
-//        //}
-//
-//      }).indexOf(dados_grades['grades'].student="ff",0);
-//      console.log(".",dados_grades['grades'])
-
-    //var pro = dados_grades['grades'].find()
-    //const grade = dados_grades['grades'].find(ee => ee.id == id)
-    //const q = dados_grades['grades'].map((ee)=>{
-    //    if(ee.id == id && dados_grades['grades'].id == id){
-    //        return dados_grades['grades'].push(
-    //            {
-    //                "student":student,
-    //                "subject":subject,
-    //                "type":type,
-    //                "value":value,
-    //                "timestamp": new Date()
-    //            }
-    //        )
-//
-    //    }
-//
-    //})
-    //const t = dados_grades['grades'].forEach(element => {
-    //    if(element.id == id){
-    //        console.log("<>>>",element)
-    //        console.log("encontru")
-    //        res.send(`<h1 style="color:green">Foi alterado</h1>`)
-    //        console.log("dd",student)
-    //        return dados_grades['grades'].indexOf(
-    //            JSON.stringify({
-    //                "student":student,
-    //                "subject":subject,
-    //                "type":type,
-    //                "value":value,
-    //                "timestamp": new Date()
-    //                
-    //            }, null, 2), dados_grades['grades'].indexOf(element));
-    //            console.log("<ZZZZ>",dados_grades['grades'])
-    //    }
-    //    
-    //    
-
-        
-    //});
-    //console.log(dados_grades['grades'])
-//
-//
+    fs.writeFileSync(grades, JSON.stringify(qw, null, 2))
     res.send(`<h1 style="color:red">id cccnão encontrado</h1>`)
-
-        //fs.writeFileSync(grades, JSON.stringify(q, null, 2))
-
 }
-
-    
-    //fs.writeFileSync('./data.json', JSON.stringify(obj, null, 2) , 'utf-8'
-        //para passar um objeto para dentro de um arquivo
-    
-    
-//        try {
-//            const grades = './dados/grades copy.json'
-//            const Dadosgrades = fs.readFileSync(grades, "utf8");
-//            const dados_grades = JSON.parse(Dadosgrades)
-//            const dados = {
-//                "id":    dados_grades['nextId'],
-//                "student":student,
-//                "subject":subject,
-//                "type":type,
-//                "value":value,
-//                "timestamp": new Date()
-//            }
-//            console.log("<>",dados_grades)
-//            dados_grades['grades'].push(dados)
-//            dados_grades['nextId'] += 1
-//            fs.writeFileSync(grades, JSON.stringify(dados_grades, null, 2))
-//            //fs.appendFileSync(grades, JSON.stringify(dados_grades));
-//            dados_grades['nextId'] += 1
-//        } catch (error) {
-//            const grades = './dados/teste.json'
-//            fs.writeFileSync(grades, JSON.stringify(
-//                {"nextId":49,
-//                 "grades":[]
-//                }, null, 2))
-//            
-//        }
-
-
-
-
 
 function salvar_grade({student, subject ,type, value}){
     //fs.writeFileSync('./data.json', JSON.stringify(obj, null, 2) , 'utf-8'
@@ -196,45 +117,38 @@ function salvar_grade({student, subject ,type, value}){
 
 }
 
-/*
-fs.writeFile(`./dados_gerados/${nome}.json`,`
-    {
-    "ID":${dados.ID},
-    "Sigla": "${dados.Sigla}",
-    "Nome": "${dados.Nome}"
+function deletar(id){
+    const grades = './dados/grades copy.json'
+    const Dadosgrades = fs.readFileSync(grades, "utf8");
+    const dados_grades = JSON.parse(Dadosgrades)
+
+    const d = dados_grades['grades'].map(e=>{
+        return e.id
+    }).indexOf(Number(id))
+    if(d!=-1){
+        dados_grades['grades'].splice(d,1)
+        dados_grades['nextId'] -= 1
+        fs.writeFileSync(grades, JSON.stringify(dados_grades, null, 2))        
     }
-    `, function(erro) {
+    
+    //console.log("<>",dados_grades)
+    //dados_grades['grades'].push(dados)
+    //dados_grades['nextId'] += 1
+    //
+    ////fs.appendFileSync(grades, JSON.stringify(dados_grades));
+    //dados_grades['nextId'] += 1
+}
 
-    if(erro) {
-        throw erro;
-    }
+function consultar(id){
+    const grades = './dados/grades copy.json'
+    const Dadosgrades = fs.readFileSync(grades, "utf8");
+    const dados_grades = JSON.parse(Dadosgrades)
 
-    console.log("Arquivo salvo");
-}); 
-*/
-
-
-
-
-//app.route('/rout')
-//.get((req,res) => {
-//    res.send("<h1>gustavo get</h1>")
-//    res.end()
-//})
-//app.route('/book')
-//.get((req,res) => {
-//    res.send('<h1>gustavo get</h1>')
-//    res.end()
-//})
-//.post((req, res) => {
-//    res.send('Add a book');
-//  })
-//.put((req, res) => {
-//    res.send('Update the book');
-//  });
-
-
-
+    const trans = dados_grades['grades'].find(e=>{
+        return e.id == id
+    })
+    return trans
+}
 
 app.listen(port,()=>{
     console.log(`servidor rodando desafio na porta ${port}`)
